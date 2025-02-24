@@ -331,7 +331,7 @@ async function exposeXtbOperations(server: McpServer, wsManager: any) {
 async function startMcpServer() {
     const server = new McpServer({
         name: "XTBApiServer",
-        version: "0.0.1",
+        version: require('../package.json').version,
     });
 
     try {
