@@ -1,19 +1,31 @@
 {
   "name": "@sharplygroup/xtb-mcp-server",
-  "version": "0.1.0",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
+  "version": "0.1.1",
+  "description": "A module for interacting with the XTB API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharplygroup/xtb-mcp-server.git"
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write .",
+    "verify": "npm run format && npm run lint && npm run build && npm run test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "xtb",
+    "api",
+    "trading"
+  ],
+  "author": "Adrian Budzyński",
+  "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
     "@sharplygroup/xtb-api-js": "^0.1.2",
@@ -29,5 +41,8 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "typescript": "^5.7.3",
     "zod": "^3.24.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
