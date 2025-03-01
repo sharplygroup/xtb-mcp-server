@@ -1,0 +1,63 @@
+name: Bump version and publish
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to main
+
+jobs:
+  bump-version:
+    if: ${{ !contains(github.event.head_commit.message, 'chore(release)') && github.actor != 'release[bot]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allows pushing changes
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Check commit message
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+          echo "Commit message: $COMMIT_MSG"
+          if [[ "$COMMIT_MSG" == *"chore(release)"* ]]; then
+            echo "Skipping build"
+            exit 78
+          fi
+
+      - name: Get Commit Author
+        run: |
+          AUTHOR=$(git log -1 --pretty=format:'%an')
+          echo "Author: $AUTHOR"
+          if [[ "$AUTHOR" == "release[bot]" ]]; then
+            echo "Skipping build for bot commits"
+            exit 78
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "release[bot]"
+          git config --global user.email "release[bot]@users.noreply.github.com"
+
+      - name: Bump Version
+        run: npx standard-version
+
+      - name: Commit and Push Version Bump
+        run: |
+          # Push changes using the PAT in the URL so that downstream workflows are triggered
+          git push --follow-tags origin main
+
+      - name: Publish to npm
+        run: npm publish --access public
